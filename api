@@ -1,0 +1,36 @@
+# Install necessary libraries
+!pip install Flask flasgger pyngrok
+
+# Import required libraries
+from flask import Flask, jsonify
+from flasgger import Swagger
+from pyngrok import ngrok
+
+# Set your ngrok authtoken here (replace 'your_authtoken' with the actual token)
+ngrok.set_auth_token('2oe53jYQvLuQhmHfGrR9UTb8MP3_3UxT3jTrw7ThmtvUWgqwY')
+
+# Initialize Flask app and Swagger UI
+app = Flask(__name__)
+swagger = Swagger(app)
+
+# Define an example endpoint
+@app.route('/api/hello', methods=['GET'])
+def hello_world():
+    """
+    A simple endpoint that returns a greeting message
+    ---
+    responses:
+      200:
+        description: A greeting message
+        examples:
+          application/json: {"message": "Hello, world!"}
+    """
+    return jsonify(message="Hello, world!")
+
+# Setup ngrok tunnel to expose Flask app to the web
+public_url = ngrok.connect(5000)
+print(f" * ngrok tunnel \"{public_url}\" -> \"http://127.0.0.1:5000\"")
+
+# Run the Flask app
+if __name__ == '__main__':
+    app.run(debug=True, use_reloader=False)
